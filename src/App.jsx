@@ -48,18 +48,19 @@ class App extends Component {
     this.setState({
       clicked: true,
     });
-    let mesa = this.state.mesa;
+    var mesa = this.state.mesa;
     switch (peca) {
       case "T": //--------------------------------------------------------------
-        let coluna = pos % 8;
-        let linha = Math.floor(pos / 8);
-        let beginLine = linha * 8;
-        let endLine = beginLine + 7;
-        let checkBegin = true;
-        let checkEnd = true;
+        var coluna = pos % 8;
+        var linha = Math.floor(pos / 8);
+        var beginLine = linha * 8;
+        var endLine = beginLine + 7;
+        var checkBegin = true;
+        var checkEnd = true;
         //checkHorizontal
         for (i = 0; i < 8; i++) {
-          if (pos - i >= beginLine && checkBegin) {
+          console.log('mesa: ' + mesa[pos+i],' pos: '+ pos, ' i: '+ i,' Coluna: ' + coluna,' linha: ' + linha,' beg: '+ beginLine,' end: ' + endLine);
+          if (pos + i >= beginLine && checkBegin) {
             if (mesa[pos - i] === " ") {
               mesa[pos - i] = "x";
             } else {
@@ -385,8 +386,8 @@ class App extends Component {
         endLine = beginLine + 7;
         checkBegin = true;
         checkEnd = true;
-        let counter = 0;
-        let counter2 = 0;
+        var counter = 0;
+        var counter2 = 0;
         //checkHorizontal
         console.clear();
         for (i = 0; i < 8; i++) {
@@ -2332,7 +2333,7 @@ class App extends Component {
         break;
       case "P":
         if (mesa[pos - 8] === " ") {
-          let obj = { a: 48, b: 49, c: 50, d: 51, e: 52, f: 53, g: 54, h: 55 };
+          var obj = { a: 48, b: 49, c: 50, d: 51, e: 52, f: 53, g: 54, h: 55 };
           for (const prop in obj)
             if (pos === obj[prop]) {
               if (
@@ -2427,8 +2428,8 @@ class App extends Component {
         }
 
 
-        // let a = { a: "Q", b: "B", c: "C", d: "T" };
-        let evol = { a: 0, b: 1, c: 2, d: 3, e: 4, f: 5, g: 6, h: 7 };
+        // var a = { a: "Q", b: "B", c: "C", d: "T" };
+        var evol = { a: 0, b: 1, c: 2, d: 3, e: 4, f: 5, g: 6, h: 7 };
         for (const evolucao in evol)
           if (pos === evol[evolucao]) {
 
@@ -2482,8 +2483,8 @@ class App extends Component {
 
   confirm = (value, i) => {
     console.log(value);
-    let mesa = this.state.mesa;
-    let copia = this.state.copy;
+    var mesa = this.state.mesa;
+    var copia = this.state.copy;
     if (mesa[i] === "x") {
       mesa[i] = mesa[this.state.selected];
       mesa[this.state.selected] = " ";
@@ -2502,9 +2503,9 @@ class App extends Component {
   };
 
   renderMesa = () => {
-    let contador = 0;
+    var contador = 0;
     return this.state.mesa.map((value, i) => {
-      let peca = this.checkEmoji(value);
+      var peca = this.checkEmoji(value);
       contador++;
       if (i % 8 === 0) {
         contador--;
