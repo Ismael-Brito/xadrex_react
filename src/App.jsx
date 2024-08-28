@@ -51,7 +51,216 @@ class App extends Component {
     var mesa = this.state.mesa;
     var branca = ["T", "C", "B", "Q", "K", "P"];
     var preta = ["t", "c", "b", "q", "k", "p"];
+    var ladoD = [15, 23, 31, 39, 47, 55];
+    var ladoE = [48, 40, 32, 24, 10, 8];
     switch (peca) {
+      //Peão Preto
+      case "p": //---------------------------------------------------------------
+        // Primeira jogada Peão
+        if (pos >= 8 && pos <= 15) {
+          // Se o campo a frente for vazio
+          if (mesa[pos + 8] === " ") {
+            // Verifica se o peão está na ponta direita
+            if (ladoD.some(elemento => elemento === pos)) {
+              if (mesa[pos + 7] !== " " && !preta.some(elemento => elemento === mesa[pos + 7])) { mesa[pos + 7] = "x" };
+            }
+            // Verifica se o peão está na ponta esquerda
+            else if (ladoE.some(elemento => elemento === pos)) {
+              if (mesa[pos + 9] !== " ") { mesa[pos + 9] = "x" };
+            }
+            // Regra geral para o peão
+            else if (!ladoD.some(elemento => elemento === pos) || !ladoE.some(elemento => elemento === pos)) {
+              if (mesa[pos + 7] !== " " && !preta.some(elemento => elemento === mesa[pos + 7])) { mesa[pos + 7] = "x"; }; // Captura à esquerda
+              if (mesa[pos + 9] !== " ") { mesa[pos + 9] = "x"; }; // Captura à direita
+            }
+            mesa[pos + 8] = "x";
+            if (mesa[pos + 16] === " ") {
+              mesa[pos + 16] = "x";
+            }
+          }
+        }
+
+        // Continuação jogada do Peão
+        else {
+          if (ladoD.some(elemento => elemento === pos)) {
+            if (mesa[pos + 7] !== " " && !preta.some(elemento => elemento === mesa[pos + 7])) { mesa[pos + 7] = "x"; }
+          } else if (ladoE.some(elemento => elemento === pos)) {
+            if (mesa[pos + 9] !== " " && !preta.some(elemento => elemento === mesa[pos + 9])) { mesa[pos + 9] = "x"; };
+          } else if (!ladoD.some(elemento => elemento === pos) || !ladoE.some(elemento => elemento === pos)) {
+            if (mesa[pos + 7] !== " " && !preta.some(elemento => elemento === mesa[pos + 7])) { mesa[pos + 7] = "x"; }; // Captura à esquerda
+            if (mesa[pos + 9] !== " " && !preta.some(elemento => elemento === mesa[pos + 9])) { mesa[pos + 9] = "x"; }; // Captura à direita
+          }
+          // Verifica se a casa diretamente à frente está vazia
+          if (mesa[pos + 8] === " ") {
+            mesa[pos + 8] = "x";
+            // Movimento de uma casa à frente
+          }
+        }
+        this.setState({
+          mesa,
+          selected: pos,
+        });
+        break;
+      //Peão Branco
+      case "P": //---------------------------------------------------------------
+        // Primeira jogada Peão
+        if (pos >= 48 && pos <= 55) {
+          if (mesa[pos - 8] === " ") {
+            // Verifica se o peão está na ponta direita
+            if (ladoD.some(elemento => elemento === pos)) {
+              if (mesa[pos - 7] !== " " && !branca.some(elemento => elemento === mesa[pos - 7])) { mesa[pos - 7] = "x" };
+            }
+            // Verifica se o peão está na ponta esquerda
+            else if (ladoE.some(elemento => elemento === pos)) {
+              if (mesa[pos - 9] !== " ") { mesa[pos - 9] = "x" };
+            }
+            // Regra geral para o peão
+            else if (!ladoD.some(elemento => elemento === pos) || !ladoE.some(elemento => elemento === pos)) {
+              if (mesa[pos - 7] !== " " && !branca.some(elemento => elemento === mesa[pos - 7])) { mesa[pos - 7] = "x"; }; // Captura à esquerda
+              if (mesa[pos - 9] !== " ") { mesa[pos - 9] = "x"; }; // Captura à direita
+            }
+            mesa[pos - 8] = "x";
+            if (mesa[pos - 16] === " ") {
+              mesa[pos - 16] = "x";
+            }
+          }
+        }
+
+        // Continuação jogada do Peão
+        else {
+          if (ladoD.some(elemento => elemento === pos)) {
+            if (mesa[pos - 7] !== " " && !branca.some(elemento => elemento === mesa[pos - 7])) { mesa[pos - 7] = "x"; }
+          } else if (ladoE.some(elemento => elemento === pos)) {
+            if (mesa[pos - 9] !== " " && !branca.some(elemento => elemento === mesa[pos - 9])) { mesa[pos - 9] = "x"; };
+          } else if (!ladoD.some(elemento => elemento === pos) || !ladoE.some(elemento => elemento === pos)) {
+            if (mesa[pos - 7] !== " " && !branca.some(elemento => elemento === mesa[pos - 7])) { mesa[pos - 7] = "x"; }; // Captura à esquerda
+            if (mesa[pos - 9] !== " " && !branca.some(elemento => elemento === mesa[pos - 9])) { mesa[pos - 9] = "x"; }; // Captura à direita
+          }
+          // Verifica se a casa diretamente à frente está vazia
+          if (mesa[pos - 8] === " ") {
+            mesa[pos - 8] = "x";
+            // Movimento de uma casa à frente
+          }
+        }
+        this.setState({
+          mesa,
+          selected: pos,
+        });
+        break;
+
+      //Torre Preto
+      case "t": //---------------------------------------------------------------
+        var coluna = pos % 8;
+        var linha = Math.floor(pos / 8);
+        var beginLine = linha * 8;
+        var endLine = beginLine + 7;
+        var checkBegin = true;
+        var checkEnd = true;
+        console.log('mesa: ' + mesa[pos], ' pos: ' + pos, ' i: ' + i, ' Coluna: ' + coluna, ' linha: ' + linha, ' beg: ' + beginLine, ' end: ' + endLine);
+        //checkHorizontal
+        /*for (i = 0; i < 8; i++) {
+          if (pos - i >= beginLine && checkBegin) {
+            if (mesa[pos - i] === " ") {
+              mesa[pos - i] = "x";
+            } else {
+              if (
+                mesa[pos - i] === "t" ||
+                mesa[pos - i] === "c" ||
+                mesa[pos - i] === "b" ||
+                mesa[pos - i] === "q" ||
+                mesa[pos - i] === "k" ||
+                mesa[pos - i] === "p"
+              ) {
+                mesa[pos - i] = "x";
+                checkBegin = false;
+              } else {
+                if (mesa[pos - i] !== " " && mesa[pos - i] !== peca) {
+                  console.log(i);
+                  checkBegin = false;
+                }
+              }
+            }
+          }
+          // }
+          console.log(`Pos+i${pos + i}`);
+          console.log(endLine);
+          if (pos + i <= endLine && checkEnd) {
+            if (mesa[pos + i] === " ") {
+              mesa[pos + i] = "x";
+            } else {
+              if (
+                mesa[pos + i] === "t" ||
+                mesa[pos + i] === "c" ||
+                mesa[pos + i] === "b" ||
+                mesa[pos + i] === "q" ||
+                mesa[pos + i] === "k" ||
+                mesa[pos + i] === "p"
+              ) {
+                mesa[pos + i] = "x";
+                checkEnd = false;
+              } else {
+                if (mesa[pos + i] !== " " && mesa[pos + i] !== peca) {
+                  console.log(i);
+                  checkEnd = false;
+                }
+              }
+            }
+          }
+        }
+        //checkVertical
+        checkBegin = true;
+        checkEnd = true;
+        for (i = 1; i <= 8; i++) {
+          if (pos - 8 * i >= linha && checkBegin) {
+            if (mesa[pos - 8 * i] === " ") {
+              mesa[pos - 8 * i] = "x";
+            } else {
+              if (
+                mesa[pos - 8 * i] === "t" ||
+                mesa[pos - 8 * i] === "c" ||
+                mesa[pos - 8 * i] === "b" ||
+                mesa[pos - 8 * i] === "q" ||
+                mesa[pos - 8 * i] === "k" ||
+                mesa[pos - 8 * i] === "p"
+              ) {
+                mesa[pos - 8 * i] = "x";
+                checkBegin = false;
+              } else {
+                if (mesa[pos - 8 * i] !== " " && mesa[pos - 8 * i] !== peca) {
+                  console.log(i);
+                  checkBegin = false;
+                }
+              }
+            }
+          }
+          if (pos + 8 * i <= 64 && checkEnd) {
+            if (mesa[pos + 8 * i] === " ") {
+              mesa[pos + 8 * i] = "x";
+            } else {
+              if (
+                mesa[pos + 8 * i] === "t" ||
+                mesa[pos + 8 * i] === "c" ||
+                mesa[pos + 8 * i] === "b" ||
+                mesa[pos + 8 * i] === "q" ||
+                mesa[pos + 8 * i] === "k" ||
+                mesa[pos + 8 * i] === "p"
+              ) {
+                mesa[pos + 8 * i] = "x";
+                checkEnd = false;
+              } else {
+                if (mesa[pos + 8 * i] !== " " && mesa[pos - 8 * i] !== peca) {
+                  console.log(i);
+                  checkEnd = false;
+                }
+              }
+            }
+          }
+        }*/
+        this.setState({
+          mesa,
+          selected: pos,
+        });
+        break;
       case "T": //--------------------------------------------------------------
         var coluna = pos % 8;
         var linha = Math.floor(pos / 8);
@@ -613,7 +822,6 @@ class App extends Component {
         //checkHorizontal
         console.clear();
         for (i = 0; i < 8; i++) {
-          console.log(coluna);
           if (counter <= coluna && checkBegin) {
             if (mesa[pos - 9 * i] === " ") {
               mesa[pos - 9 * i] = "x";
@@ -1177,142 +1385,6 @@ class App extends Component {
                       }
                     }
                   }
-                }
-              }
-            }
-          }
-        }
-        this.setState({
-          mesa,
-          selected: pos,
-        });
-        break;
-      case "p": //---------------------------------------------------------------
-        // Primeira jogada Peão
-        if (pos >= 8 && pos <= 15) {
-          if (mesa[pos + 7] !== " ") { mesa[pos + 7] = "x" };
-          if (mesa[pos + 9] !== " ") { mesa[pos + 9] = "x" }
-          mesa[pos + 8] = "x";
-          mesa[pos + 16] = "x";
-        }
-
-        // Continuação jogada do Peão
-        else {
-          if (mesa[pos + 7] !== " ") { mesa[pos + 7] = "x"; }; // Captura à esquerda
-          if (mesa[pos + 9] !== " ") { mesa[pos + 9] = "x"; }; // Captura à direita
-
-          // Verifica se a casa diretamente à frente está vazia
-          if (mesa[pos + 8] === " ") {
-            mesa[pos + 8] = "x";
-            // Movimento de uma casa à frente
-          }
-        }
-        this.setState({
-          mesa,
-          selected: pos,
-        });
-        break;
-      case "t": //--------------------------------------------------------------
-        coluna = pos % 8;
-        linha = Math.floor(pos / 8);
-        beginLine = linha * 8;
-        endLine = beginLine + 7;
-        checkBegin = true;
-        checkEnd = true;
-        //checkHorizontal
-        for (i = 0; i < 8; i++) {
-          if (pos - i >= beginLine && checkBegin) {
-            if (mesa[pos - i] === " ") {
-              mesa[pos - i] = "x";
-            } else {
-              if (
-                mesa[pos - i] === "t" ||
-                mesa[pos - i] === "c" ||
-                mesa[pos - i] === "b" ||
-                mesa[pos - i] === "q" ||
-                mesa[pos - i] === "k" ||
-                mesa[pos - i] === "p"
-              ) {
-                mesa[pos - i] = "x";
-                checkBegin = false;
-              } else {
-                if (mesa[pos - i] !== " " && mesa[pos - i] !== peca) {
-                  console.log(i);
-                  checkBegin = false;
-                }
-              }
-            }
-          }
-          // }
-          console.log(`Pos+i${pos + i}`);
-          console.log(endLine);
-          if (pos + i <= endLine && checkEnd) {
-            if (mesa[pos + i] === " ") {
-              mesa[pos + i] = "x";
-            } else {
-              if (
-                mesa[pos + i] === "t" ||
-                mesa[pos + i] === "c" ||
-                mesa[pos + i] === "b" ||
-                mesa[pos + i] === "q" ||
-                mesa[pos + i] === "k" ||
-                mesa[pos + i] === "p"
-              ) {
-                mesa[pos + i] = "x";
-                checkEnd = false;
-              } else {
-                if (mesa[pos + i] !== " " && mesa[pos + i] !== peca) {
-                  console.log(i);
-                  checkEnd = false;
-                }
-              }
-            }
-          }
-        }
-        //checkVertical
-        checkBegin = true;
-        checkEnd = true;
-        for (i = 1; i <= 8; i++) {
-          if (pos - 8 * i >= linha && checkBegin) {
-            if (mesa[pos - 8 * i] === " ") {
-              mesa[pos - 8 * i] = "x";
-            } else {
-              if (
-                mesa[pos - 8 * i] === "t" ||
-                mesa[pos - 8 * i] === "c" ||
-                mesa[pos - 8 * i] === "b" ||
-                mesa[pos - 8 * i] === "q" ||
-                mesa[pos - 8 * i] === "k" ||
-                mesa[pos - 8 * i] === "p"
-              ) {
-                mesa[pos - 8 * i] = "x";
-                checkBegin = false;
-              } else {
-                if (mesa[pos - 8 * i] !== " " && mesa[pos - 8 * i] !== peca) {
-                  console.log(i);
-                  checkBegin = false;
-                }
-              }
-            }
-          }
-          if (pos + 8 * i <= 64 && checkEnd) {
-            if (mesa[pos + 8 * i] === " ") {
-              mesa[pos + 8 * i] = "x";
-            } else {
-              if (
-                mesa[pos + 8 * i] === "t" ||
-                mesa[pos + 8 * i] === "c" ||
-                mesa[pos + 8 * i] === "b" ||
-                mesa[pos + 8 * i] === "q" ||
-                mesa[pos + 8 * i] === "k" ||
-                mesa[pos + 8 * i] === "p"
-              ) {
-                mesa[pos + 8 * i] = "x";
-                checkEnd = false;
-              } else {
-                if (mesa[pos + 8 * i] !== " " && mesa[pos - 8 * i] !== peca) {
-                  console.log(i);
-                  checkEnd = false;
                 }
               }
             }
@@ -2347,119 +2419,7 @@ class App extends Component {
           selected: pos,
         });
         break;
-      case "P":
-        if (mesa[pos - 8] === " ") {
-          var obj = { a: 48, b: 49, c: 50, d: 51, e: 52, f: 53, g: 54, h: 55 };
-          for (const prop in obj)
-            if (pos === obj[prop]) {
-              if (
-                mesa[pos - 8] === " " ||
-                mesa[pos - 16] === " "
-              ) {
-                mesa[pos - 8] = "x";
-                mesa[pos - 16] = "x";
-              }
-            }
-            else {
-              if (mesa[pos - 8] === " ") {
-                mesa[pos - 8] = "x"
-              }
-              if (pos === (8, 16, 24, 32, 40, 48)) {
-                if (
-                  mesa[pos - 9] === "t" ||
-                  mesa[pos - 9] === "c" ||
-                  mesa[pos - 9] === "b" ||
-                  mesa[pos - 9] === "q" ||
-                  mesa[pos - 9] === "p" ||
-                  mesa[pos - 9] === "k"
-                ) { mesa[pos - 9] = "x" }
-              }
 
-              if (pos === (15, 23, 31, 39, 47, 55)) {
-                if (
-                  mesa[pos - 7] === "t" ||
-                  mesa[pos - 7] === "c" ||
-                  mesa[pos - 7] === "b" ||
-                  mesa[pos - 7] === "q" ||
-                  mesa[pos - 7] === "p" ||
-                  mesa[pos - 7] === "k"
-                ) { mesa[pos - 7] = "x" }
-
-              }
-            }
-        } else {
-
-          if (
-            mesa[pos - 9] === "t" ||
-            mesa[pos - 9] === "c" ||
-            mesa[pos - 9] === "b" ||
-            mesa[pos - 9] === "q" ||
-            mesa[pos - 9] === "p" ||
-            mesa[pos - 9] === "k"
-          ) {
-            if (pos !== 16) {
-              if (
-                mesa[pos - 8] === "t" ||
-                mesa[pos - 8] === "c" ||
-                mesa[pos - 8] === "b" ||
-                mesa[pos - 8] === "q" ||
-                mesa[pos - 8] === "p" ||
-                mesa[pos - 8] === "k" ||
-                mesa[pos - 8] === "T" ||
-                mesa[pos - 8] === "C" ||
-                mesa[pos - 8] === "B" ||
-                mesa[pos - 8] === "Q" ||
-                mesa[pos - 8] === "P" ||
-                mesa[pos - 8] === "K"
-              ) { mesa[pos - 9] = "x" }
-            }
-          }
-
-          if (
-            mesa[pos - 7] === "t" ||
-            mesa[pos - 7] === "c" ||
-            mesa[pos - 7] === "b" ||
-            mesa[pos - 7] === "q" ||
-            mesa[pos - 7] === "p" ||
-            mesa[pos - 7] === "k"
-          ) {
-            if (pos !== 23) {
-              if (
-                mesa[pos - 8] === "t" ||
-                mesa[pos - 8] === "c" ||
-                mesa[pos - 8] === "b" ||
-                mesa[pos - 8] === "q" ||
-                mesa[pos - 8] === "p" ||
-                mesa[pos - 8] === "k" ||
-                mesa[pos - 8] === "T" ||
-                mesa[pos - 8] === "C" ||
-                mesa[pos - 8] === "B" ||
-                mesa[pos - 8] === "Q" ||
-                mesa[pos - 8] === "P" ||
-                mesa[pos - 8] === "K"
-              ) { mesa[pos - 7] = "x" }
-            }
-          }
-
-        }
-
-
-        // var a = { a: "Q", b: "B", c: "C", d: "T" };
-        var evol = { a: 0, b: 1, c: 2, d: 3, e: 4, f: 5, g: 6, h: 7 };
-        for (const evolucao in evol)
-          if (pos === evol[evolucao]) {
-
-            return (
-              mesa[pos - 8] = "x"
-            )
-          }
-
-
-        this.setState({
-          mesa,
-          selected: pos,
-        });
-        break;
       default:
         return " ";
     }
@@ -2498,7 +2458,6 @@ class App extends Component {
   };
 
   confirm = (value, i) => {
-    console.log(value);
     var mesa = this.state.mesa;
     var copia = this.state.copy;
     if (mesa[i] === "x") {
