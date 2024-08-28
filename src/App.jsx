@@ -49,6 +49,8 @@ class App extends Component {
       clicked: true,
     });
     var mesa = this.state.mesa;
+    var branca = ["T", "C", "B", "Q", "K", "P"];
+    var preta = ["t", "c", "b", "q", "k", "p"];
     switch (peca) {
       case "T": //--------------------------------------------------------------
         var coluna = pos % 8;
@@ -59,18 +61,18 @@ class App extends Component {
         var checkEnd = true;
         //checkHorizontal
         for (i = 0; i < 8; i++) {
-          console.log('mesa: ' + mesa[pos+i],' pos: '+ pos, ' i: '+ i,' Coluna: ' + coluna,' linha: ' + linha,' beg: '+ beginLine,' end: ' + endLine);
-          if (pos + i >= beginLine && checkBegin) {
+          console.log('mesa: ' + mesa[pos - i], ' pos: ' + pos, ' i: ' + i, ' Coluna: ' + coluna, ' linha: ' + linha, ' beg: ' + beginLine, ' end: ' + endLine);
+          if (pos - i >= beginLine && checkBegin) {
             if (mesa[pos - i] === " ") {
-              mesa[pos - i] = "x";
+              mesa[pos - i] = "a";
             } else {
               if (
-                mesa[pos - i] === "T" ||
-                mesa[pos - i] === "C" ||
-                mesa[pos - i] === "B" ||
-                mesa[pos - i] === "Q" ||
-                mesa[pos - i] === "K" ||
-                mesa[pos - i] === "P"
+                mesa[pos - i] === "t" ||
+                mesa[pos - i] === "c" ||
+                mesa[pos - i] === "b" ||
+                mesa[pos - i] === "q" ||
+                mesa[pos - i] === "k" ||
+                mesa[pos - i] === "p"
               ) {
                 mesa[pos - i] = "x";
                 checkBegin = false;
@@ -89,12 +91,12 @@ class App extends Component {
               mesa[pos + i] = "x";
             } else {
               if (
-                mesa[pos + i] === "T" ||
-                mesa[pos + i] === "C" ||
-                mesa[pos + i] === "B" ||
-                mesa[pos + i] === "Q" ||
-                mesa[pos + i] === "K" ||
-                mesa[pos + i] === "P"
+                mesa[pos + i] === "t" ||
+                mesa[pos + i] === "c" ||
+                mesa[pos + i] === "b" ||
+                mesa[pos + i] === "q" ||
+                mesa[pos + i] === "k" ||
+                mesa[pos + i] === "p"
               ) {
                 mesa[pos + i] = "x";
                 checkEnd = false;
@@ -116,12 +118,12 @@ class App extends Component {
               mesa[pos - 8 * i] = "x";
             } else {
               if (
-                mesa[pos - 8 * i] === "T" ||
-                mesa[pos - 8 * i] === "C" ||
-                mesa[pos - 8 * i] === "B" ||
-                mesa[pos - 8 * i] === "Q" ||
-                mesa[pos - 8 * i] === "K" ||
-                mesa[pos - 8 * i] === "P"
+                mesa[pos - 8 * i] === "t" ||
+                mesa[pos - 8 * i] === "c" ||
+                mesa[pos - 8 * i] === "b" ||
+                mesa[pos - 8 * i] === "q" ||
+                mesa[pos - 8 * i] === "k" ||
+                mesa[pos - 8 * i] === "p"
               ) {
                 mesa[pos - 8 * i] = "x";
                 checkBegin = false;
@@ -1186,11 +1188,25 @@ class App extends Component {
         });
         break;
       case "p": //---------------------------------------------------------------
-        if (pos !== i) {
+        // Primeira jogada Peão
+        if (pos >= 8 && pos <= 15) {
+          if (mesa[pos + 7] !== " ") { mesa[pos + 7] = "x" };
+          if (mesa[pos + 9] !== " ") { mesa[pos + 9] = "x" }
           mesa[pos + 8] = "x";
           mesa[pos + 16] = "x";
         }
-        else { mesa[pos + 8] = "x"; }
+
+        // Continuação jogada do Peão
+        else {
+          if (mesa[pos + 7] !== " ") { mesa[pos + 7] = "x"; }; // Captura à esquerda
+          if (mesa[pos + 9] !== " ") { mesa[pos + 9] = "x"; }; // Captura à direita
+
+          // Verifica se a casa diretamente à frente está vazia
+          if (mesa[pos + 8] === " ") {
+            mesa[pos + 8] = "x";
+            // Movimento de uma casa à frente
+          }
+        }
         this.setState({
           mesa,
           selected: pos,
@@ -2490,6 +2506,13 @@ class App extends Component {
       mesa[this.state.selected] = " ";
       copia[i] = mesa[i];
       copia[this.state.selected] = " ";
+    }
+    // Condição para promover o Peão
+    if (i >= 56 && i <= 63 && mesa[i] === 'p') {
+      mesa[i] = 'q';
+    }
+    if (i >= 0 && i <= 7 && mesa[i] === 'P') {
+      mesa[i] = 'Q';
     }
     this.state.mesa.forEach((value, i) => {
       if (value === "x") {
