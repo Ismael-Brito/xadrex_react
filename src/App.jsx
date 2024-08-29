@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Modal from 'react-modal';
 import "./App.css";
 import Tb from "./img/TorreB.png";
 import Tp from "./img/TorreP.png";
@@ -15,7 +16,13 @@ import Pb from "./img/PeaoB.png";
 
 var i;
 
+// Código necessário para os recursos de acessibilidade
+Modal.setAppElement('#root');
+
 class App extends Component {
+  // Hook que demonstra se a modal está aberta ou não
+  //const[modalIsOpen, setIsOpen] = Component.useState(false);
+
   constructor(props) {
     super(props);
     this.state = {
@@ -41,7 +48,12 @@ class App extends Component {
       ],
       selected: "",
       clicked: false,
+      modalIsOpen: false,
+      Mostrar: null,
     };
+    // // Ligando os métodos ao contexto da classe
+    // this.openModal = this.openModal.bind(this);
+    // this.closeModal = this.closeModal.bind(this);
   }
 
   move = (peca, pos) => {
@@ -156,9 +168,8 @@ class App extends Component {
         var endLine = beginLine + 7;
         var checkBegin = true;
         var checkEnd = true;
-        // console.log('mesa: ' + mesa[pos], ' pos: ' + pos, ' i: ' + i, ' Coluna: ' + coluna, ' linha: ' + linha, ' beg: ' + beginLine, ' end: ' + endLine);
         //checkHorizontal
-        for (i = 0; i < 8; i++) {
+        for (let i = 0; i < 8; i++) {
           if (pos - i >= beginLine && checkBegin) {
             if (mesa[pos - i] === " ") {
               mesa[pos - i] = "x";
@@ -174,9 +185,6 @@ class App extends Component {
               }
             }
           }
-
-          console.log(`Pos+i${pos + i}`);
-          console.log(endLine);
           if (pos + i <= endLine && checkEnd) {
             if (mesa[pos + i] === " ") {
               mesa[pos + i] = "x";
@@ -186,7 +194,6 @@ class App extends Component {
                 checkEnd = false;
               } else {
                 if (mesa[pos + i] !== " " && mesa[pos + i] !== peca) {
-                  console.log(i);
                   checkEnd = false;
                 }
               }
@@ -196,7 +203,7 @@ class App extends Component {
         //checkVertical
         checkBegin = true;
         checkEnd = true;
-        for (i = 1; i <= 8; i++) {
+        for (let i = 1; i <= 8; i++) {
           if (pos - 8 * i >= linha && checkBegin) {
             if (mesa[pos - 8 * i] === " ") {
               mesa[pos - 8 * i] = "x";
@@ -234,39 +241,28 @@ class App extends Component {
         });
         break;
       case "T": //--------------------------------------------------------------
-         coluna = pos % 8;
-         linha = Math.floor(pos / 8);
-         beginLine = linha * 8;
-         endLine = beginLine + 7;
-         checkBegin = true;
-         checkEnd = true;
+        coluna = pos % 8;
+        linha = Math.floor(pos / 8);
+        beginLine = linha * 8;
+        endLine = beginLine + 7;
+        checkBegin = true;
+        checkEnd = true;
         //checkHorizontal
-        for (i = 0; i < 8; i++) {
-          console.log('mesa: ' + mesa[pos - i], ' pos: ' + pos, ' i: ' + i, ' Coluna: ' + coluna, ' linha: ' + linha, ' beg: ' + beginLine, ' end: ' + endLine);
+        for (let i = 0; i < 8; i++) {
           if (pos - i >= beginLine && checkBegin) {
             if (mesa[pos - i] === " ") {
               mesa[pos - i] = "a";
             } else {
-              if (
-                mesa[pos - i] === "t" ||
-                mesa[pos - i] === "c" ||
-                mesa[pos - i] === "b" ||
-                mesa[pos - i] === "q" ||
-                mesa[pos - i] === "k" ||
-                mesa[pos - i] === "p"
-              ) {
+              if (!branca.some(elemento => elemento === mesa[pos - i])) {
                 mesa[pos - i] = "x";
                 checkBegin = false;
               } else {
                 if (mesa[pos - i] !== " " && mesa[pos - i] !== peca) {
-                  console.log(i);
                   checkBegin = false;
                 }
               }
             }
           }
-          console.log(`Pos+i${pos + i}`);
-          console.log(endLine);
           if (pos + i <= endLine && checkEnd) {
             if (mesa[pos + i] === " ") {
               mesa[pos + i] = "x";
@@ -283,7 +279,6 @@ class App extends Component {
                 checkEnd = false;
               } else {
                 if (mesa[pos + i] !== " " && mesa[pos + i] !== peca) {
-                  console.log(i);
                   checkEnd = false;
                 }
               }
@@ -310,7 +305,6 @@ class App extends Component {
                 checkBegin = false;
               } else {
                 if (mesa[pos - 8 * i] !== " " && mesa[pos - 8 * i] !== peca) {
-                  console.log(i);
                   checkBegin = false;
                 }
               }
@@ -332,7 +326,7 @@ class App extends Component {
                 checkEnd = false;
               } else {
                 if (mesa[pos + 8 * i] !== " " && mesa[pos - 8 * i] !== peca) {
-                  console.log(i);
+
                   checkEnd = false;
                 }
               }
@@ -2431,6 +2425,7 @@ class App extends Component {
   confirm = (value, i) => {
     var mesa = this.state.mesa;
     var copia = this.state.copy;
+    console.log(mesa[i]);
     if (mesa[i] === "x") {
       mesa[i] = mesa[this.state.selected];
       mesa[this.state.selected] = " ";
@@ -2439,6 +2434,7 @@ class App extends Component {
     }
     // Condição para promover o Peão
     if (i >= 56 && i <= 63 && mesa[i] === 'p') {
+      this.abrirModal(mesa[i]);
       mesa[i] = 'q';
     }
     if (i >= 0 && i <= 7 && mesa[i] === 'P') {
@@ -2557,10 +2553,44 @@ class App extends Component {
     }
   };
 
+  // Função que abre a modal
+  abrirModal = (dados) => {
+    if (dados === "p") {
+      const pretas = ["t", "c", "b", "q", "k"];
+      const buttons = pretas.map((elemento, index) => (
+        <button onClick={this.fecharModal(index)} key={index} className="option">{this.checkEmoji(elemento)}</button>
+      ));
+      this.setState({ Mostrar: () => <div>{buttons}</div> });
+    }
+    this.setState({ modalIsOpen: true });
+  }
+
+  // Função que fecha a modal
+  fecharModal = (dados) => {
+    console.log(dados);
+    this.setState({ modalIsOpen: false, Mostrar: null });
+  }
 
   render() {
+    const { Mostrar } = this.state;
+
     return (
       <>
+        <div>
+          <Modal
+            isOpen={this.state.modalIsOpen}
+            onRequestClose={this.fecharModal}
+            contentLabel="Modal"
+            shouldCloseOnOverlayClick={false}
+            shouldCloseOnEsc={false}
+          >
+            <h2>Escolha uma opção!</h2>
+            <div className="options-container">
+              {Mostrar && <Mostrar />}
+            </div>
+            <button onClick={this.fecharModal}>Fechar Modal</button>
+          </Modal>
+        </div>
         <div className="title"><h1>XADREZ</h1></div>
         <div className="App">
           <div className="grid">{this.renderMesa()}
